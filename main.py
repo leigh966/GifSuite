@@ -1,37 +1,14 @@
 import os
 from flask import Flask, flash, redirect, request
 from werkzeug.utils import secure_filename
-from moviepy.editor import VideoFileClip
-from flask import send_from_directory
+import mp4_to_gif as m2g
+import file_manipulation as fm
+
 
 UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'mp4'}
-
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['APPLICATION_ROOT'] = '/'
-
-def download_file(name):
-    return send_from_directory(app.config["UPLOAD_FOLDER"], name)
-
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
-def do_conversion(filename):
-    clip = VideoFileClip(f'{filename}.mp4')
-    clip.write_gif(f'{filename}.gif')
-    clip.close()
-    os.remove(f'{filename}.mp4')
-
-def remove_extension(filename):
-    filename_parts = filename.split('.')
-    output = ''
-    for index in range(0,len(filename_parts)-1):
-        output += filename_parts[index]
-    return output
 
 @app.route('/', methods=['POST'])
 def convert():
@@ -44,11 +21,11 @@ def convert():
     if file.filename == '':
         flash('No selected file')
         return redirect(request.url)
-    if file and allowed_file(file.filename):
-        filename = remove_extension(secure_filename(file.filename))
+    if file and m2g.allowed_file(file.filename):
+        filename = fm.remove_extension(secure_filename(file.filename))
         path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(path+".mp4")
-        do_conversion(path)
-        return download_file(f'{filename}.gif')
+        m2g.convert(path)
+        return m2g.download_file(UPLOAD_FOLDER, f'{filename}.gif')
 
 app.run()
