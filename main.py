@@ -26,7 +26,7 @@ def do_conversion(filename):
     os.remove(f'{filename}.mp4')
 
 
-@app.route('/')
+@app.route('/', methods=['POST'])
 def convert():
     # check if the post request has the file part
     if 'file' not in request.files:
