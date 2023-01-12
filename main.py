@@ -1,5 +1,5 @@
 import os
-from flask import Flask, flash, request, redirect, url_for
+from flask import Flask, flash, redirect, request
 from werkzeug.utils import secure_filename
 from moviepy.editor import VideoFileClip
 from flask import send_from_directory
@@ -9,7 +9,7 @@ ALLOWED_EXTENSIONS = {'mp4'}
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
+app.config['APPLICATION_ROOT'] = '/'
 
 def download_file(name):
     return send_from_directory(app.config["UPLOAD_FOLDER"], name)
@@ -26,8 +26,8 @@ def do_conversion(filename):
     os.remove(f'{filename}.mp4')
 
 
-app.route('/', methods=["post"])
-def try_convert():
+@app.route('/')
+def convert():
     # check if the post request has the file part
     if 'file' not in request.files:
         flash('No file part')
@@ -41,8 +41,8 @@ def try_convert():
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        do_conversion(f'{UPLOAD_FOLDER}/{filename}')
-        return download_file(f'{UPLOAD_FOLDER}/{filename}.gif')
-
+        directory = f'{UPLOAD_FOLDER}/{filename}'.split(".")[0]
+        do_conversion(directory)
+        return download_file(f'{directory}.gif')
 
 app.run()
