@@ -23,6 +23,7 @@ def allowed_file(filename):
 def do_conversion(filename):
     clip = VideoFileClip(f'{filename}.mp4')
     clip.write_gif(f'{filename}.gif')
+    clip.close()
     os.remove(f'{filename}.mp4')
 
 
@@ -43,6 +44,6 @@ def convert():
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         directory = f'{UPLOAD_FOLDER}/{filename}'.split(".")[0]
         do_conversion(directory)
-        return download_file(f'{directory}.gif')
+        return download_file(f'{filename.split(".")[0]}.gif')
 
 app.run()
