@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['APPLICATION_ROOT'] = '/'
 
-@app.route('/', methods=['POST'])
+@app.route('/mp4ToGif', methods=['POST'])
 def convert():
     # check if the post request has the file part
     if 'file' not in request.files:
