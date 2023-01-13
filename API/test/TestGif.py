@@ -21,7 +21,7 @@ class TestGif(unittest.TestCase):
         self.assertEqual(auto.get_version(), manual.get_version(), "Using read_from_file should yield the " +
                                                        "same results as manually reading and passing in bytes")
 
-    @parameterized.expand([["data/tsTimer.gif", False]])
+    @parameterized.expand([["data/tsTimer.gif", True]])
     def test_has_color_map_correct(self, file_path, expected):
         self.assertEqual(expected, Gif.read_from_file(file_path).get_has_global_color_map())
 
