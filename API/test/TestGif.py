@@ -22,12 +22,12 @@ class TestGif(unittest.TestCase):
                                                        "same results as manually reading and passing in bytes")
 
 
-    @parameterized.expand([["data/tsTimer.gif", 240]])
+    @parameterized.expand([["data/tsTimer.gif", 240], ["data/tsTimerCropped.gif", 180]])
     def test_height_correct(self, file_path, expected_height):
         gif = Gif.read_from_file(file_path)
         self.assertEqual(expected_height, gif.height)
 
-    @parameterized.expand([["data/tsTimer.gif", 426]])
+    @parameterized.expand([["data/tsTimer.gif", 426], ["data/tsTimerCropped.gif", 319]])
     def test_width_correct(self, file_path, expected_width):
         gif = Gif.read_from_file(file_path)
         self.assertEqual(expected_width, gif.width)
