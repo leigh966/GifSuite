@@ -7,3 +7,6 @@ def get_sub_binary(value, inclusive_start, exclusive_end):
     bin_substring = bin_string[inclusive_start:exclusive_end]
     print(bin_substring)
     return int(bin_substring[::-1], 2)
+
+def flip_bin(value):
+    return int(str(value)[::-1])
