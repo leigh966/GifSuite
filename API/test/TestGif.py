@@ -9,7 +9,7 @@ class TestGif(unittest.TestCase):
             contents = f.read()
             my_gif = Gif(contents)
             b = bytes("89a", 'utf-8')
-            self.assertEqual(b, my_gif.version)
+            self.assertEqual(b, my_gif.get_version())
 
     def test_read_from_file(self):
         manual = ()
@@ -18,7 +18,7 @@ class TestGif(unittest.TestCase):
             contents = f.read()
             manual = Gif(contents)
         auto = Gif.read_from_file(path)
-        self.assertEqual(auto.version, manual.version, "Using read_from_file should yield the " +
+        self.assertEqual(auto.get_version(), manual.get_version(), "Using read_from_file should yield the " +
                                                        "same results as manually reading and passing in bytes")
 
     @parameterized.expand([["data/tsTimer.gif", False]])
@@ -29,12 +29,12 @@ class TestGif(unittest.TestCase):
     @parameterized.expand([["data/tsTimer.gif", 240], ["data/tsTimerCropped.gif", 180]])
     def test_height_correct(self, file_path, expected_height):
         gif = Gif.read_from_file(file_path)
-        self.assertEqual(expected_height, gif.height)
+        self.assertEqual(expected_height, gif.get_height())
 
     @parameterized.expand([["data/tsTimer.gif", 426], ["data/tsTimerCropped.gif", 319]])
     def test_width_correct(self, file_path, expected_width):
         gif = Gif.read_from_file(file_path)
-        self.assertEqual(expected_width, gif.width)
+        self.assertEqual(expected_width, gif.get_width())
 
 
 
