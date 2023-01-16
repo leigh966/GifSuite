@@ -21,12 +21,11 @@ class TestGif(unittest.TestCase):
             manual = Gif(contents)
         auto = Gif.read_from_file(path)
         self.assertEqual(auto.get_version(), manual.get_version(), "Using read_from_file should yield the " +
-                                                       "same results as manually reading and passing in bytes")
+                                                                "same results as manually reading and passing in bytes")
 
     @parameterized.expand([[MAIN_TEST_GIF, True]])
     def test_has_color_map_correct(self, file_path, expected):
         self.assertEqual(expected, Gif.read_from_file(file_path).get_has_global_color_map())
-
 
     @parameterized.expand([[MAIN_TEST_GIF, 240], [CROPPED_TEST_GIF, 180]])
     def test_height_correct(self, file_path, expected_height):
@@ -98,6 +97,11 @@ class TestGif(unittest.TestCase):
         except ValueError:
             self.assertFalse(allowed)
             self.assertEqual(start, gif.get_global_color_map())
+
+    @parameterized.expand([[MAIN_TEST_GIF, 808]])
+    def test_image_descriptor_start_correct(self, file_path, expected_start):
+        gif = Gif.read_from_file(file_path)
+        self.assertEqual(expected_start, gif.get_image_descriptor_start())
 
 
 if __name__ == '__main__':

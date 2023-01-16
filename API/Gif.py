@@ -3,6 +3,10 @@ from API.ValueNotPresentError import ValueNotPresentError
 from API.exception_generation import compare_values_equal, compare_values_in_range
 
 NO_COLOR_MAP_MESSAGE = "This file does not contain a global color map"
+COLOR_START = 13
+IMAGE_SEPERATOR = 44
+EXTENSION_BLOCK_MARKER = 33
+
 
 class Gif:
     __global_color_map = None
@@ -25,6 +29,27 @@ class Gif:
         self.__bits_per_pixel = flip_bin(get_sub_binary(gif_bytes[10], 0, 3))+1
         self.__background_color_index = gif_bytes[11]
 
+
+
+    __image_descriptor_start = None
+
+    def get_image_descriptor_start(self):
+        def search_for_start_of_image_descriptor(current_index):
+            if self.__gif_bytes[current_index] != EXTENSION_BLOCK_MARKER:
+                return current_index
+            current_index += 2
+            while self.__gif_bytes[current_index] > 0:
+                current_index += self.__gif_bytes[current_index] + 1
+            return search_for_start_of_image_descriptor(current_index + 1)
+        if self.__image_descriptor_start is None:
+            base_start = (pow(2, self.__bits_per_pixel) * 3) + COLOR_START
+            index = search_for_start_of_image_descriptor(base_start)
+            if self.__gif_bytes[index] != IMAGE_SEPERATOR:
+                raise ValueError(f'The read head got lost at index {index}'
+                                 f' trying to find the start of the image descriptor')
+            self.__image_descriptor_start = index
+        return index
+
     def set_global_color_map(self, value):
         if not self.__has_global_color_map:
             return ValueNotPresentError(NO_COLOR_MAP_MESSAGE)
@@ -42,7 +67,7 @@ class Gif:
         if not self.__has_global_color_map:
             raise ValueNotPresentError(NO_COLOR_MAP_MESSAGE)
         if self.__global_color_map is None:
-            self.__global_color_map = self.__read_color_map(13)
+            self.__global_color_map = self.__read_color_map(COLOR_START)
         return self.__global_color_map
 
     def get_background_color_index(self):
