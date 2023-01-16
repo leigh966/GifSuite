@@ -65,6 +65,13 @@ class TestGif(unittest.TestCase):
             self.assertFalse(allowed)
             self.assertEqual(start, gif.get_background_color_index())
 
+    @parameterized.expand([[MAIN_TEST_GIF, 0, 246, 246, 246]])
+    def test_global_color_map_correct(self, file_path, entry_no, red, green, blue):
+        gif = Gif.read_from_file(file_path)
+        color_entry = gif.get_global_color_map()[entry_no]
+        self.assertEqual(red, color_entry[0])
+        self.assertEqual(green, color_entry[1])
+        self.assertEqual(blue, color_entry[2])
 
 if __name__ == '__main__':
     unittest.main()

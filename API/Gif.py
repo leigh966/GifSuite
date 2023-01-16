@@ -1,6 +1,20 @@
 from API.binary_manipulation import *
+from API.ValueNotPresentError import ValueNotPresentError
+
 class Gif:
+
+    def __read_color_map(self, start):
+        output = []
+        for i in range(0, pow(2, self.__bits_per_pixel)):
+            output.append([])
+            byte_index = start+i*3
+            for j in range(byte_index,byte_index+3):
+                print(output)
+                output[i].append(self.__gif_bytes[j])
+        return output
+
     def __init__(self, gif_bytes):
+        self.__gif_bytes = gif_bytes
         self.__version = gif_bytes[3:6]
         self.__width = int.from_bytes(gif_bytes[7:5:-1], "big")
         self.__height = int.from_bytes(gif_bytes[9:7:-1], "big")
@@ -8,6 +22,11 @@ class Gif:
         self.__color_resolution = flip_bin(get_sub_binary(gif_bytes[10], 4, 7))+1
         self.__bits_per_pixel = flip_bin(get_sub_binary(gif_bytes[10], 0, 3))+1
         self.__background_color_index = gif_bytes[11]
+
+    def get_global_color_map(self):
+        if not self.__has_global_color_map:
+            raise ValueNotPresentError("This file does not contain a global color map")
+        return self.__read_color_map(13)
 
     def get_background_color_index(self):
         return self.__background_color_index
