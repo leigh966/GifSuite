@@ -73,6 +73,33 @@ class TestGif(unittest.TestCase):
         self.assertEqual(green, color_entry[1])
         self.assertEqual(blue, color_entry[2])
 
+    @parameterized.expand([[MAIN_TEST_GIF, pow(2 ,8), [256, 255,255], False],
+                           [MAIN_TEST_GIF, pow(2, 8), [255, 256,255], False],
+                           [MAIN_TEST_GIF, pow(2, 8), [255, 255,256], False],
+                           [MAIN_TEST_GIF, pow(2, 8), [255, 255,255], True],
+                           [MAIN_TEST_GIF, pow(2, 8) - 1, [255, 255, 255], False],
+                           [MAIN_TEST_GIF, pow(2, 8) + 1, [255, 255, 255], False],
+                           [MAIN_TEST_GIF, pow(2, 8), [-1, 0, 0], False],
+                           [MAIN_TEST_GIF, pow(2, 8), [0, -1, 0], False],
+                           [MAIN_TEST_GIF, pow(2, 8), [0, 0, -1], False],
+                           [MAIN_TEST_GIF, pow(2, 8), [0, 0, 0], True],
+                           [MAIN_TEST_GIF, pow(2, 8), [0, 0, 0, 0], False],
+                           [MAIN_TEST_GIF, pow(2, 8), [0, 0], False]])
+    def test_set_global_color_map(self, file_path, no_entries, colors, allowed):
+        color_map = []
+        for i in range(0, no_entries):
+            color_map.append(colors)
+        gif = Gif.read_from_file(file_path)
+        start = gif.get_global_color_map()
+        try:
+            gif.set_global_color_map(color_map)
+            self.assertTrue(allowed)
+            self.assertEqual(color_map, gif.get_global_color_map())
+        except ValueError:
+            self.assertFalse(allowed)
+            self.assertEqual(start, gif.get_global_color_map())
+
+
 if __name__ == '__main__':
     unittest.main()
 

@@ -1,15 +1,17 @@
 from API.binary_manipulation import *
 from API.ValueNotPresentError import ValueNotPresentError
+from API.exception_generation import compare_values_equal, compare_values_in_range
+
+NO_COLOR_MAP_MESSAGE = "This file does not contain a global color map"
 
 class Gif:
-
+    __global_color_map = None
     def __read_color_map(self, start):
         output = []
         for i in range(0, pow(2, self.__bits_per_pixel)):
             output.append([])
             byte_index = start+i*3
             for j in range(byte_index,byte_index+3):
-                print(output)
                 output[i].append(self.__gif_bytes[j])
         return output
 
@@ -23,10 +25,25 @@ class Gif:
         self.__bits_per_pixel = flip_bin(get_sub_binary(gif_bytes[10], 0, 3))+1
         self.__background_color_index = gif_bytes[11]
 
+    def set_global_color_map(self, value):
+        if not self.__has_global_color_map:
+            return ValueNotPresentError(NO_COLOR_MAP_MESSAGE)
+        compare_values_equal(pow(2, self.__bits_per_pixel), len(value), "The global color map should consist of 'expected' "
+                                                                  "entries, not 'actual'")
+        for entry_index in range(0, len(value)):
+            compare_values_equal(3, len(value[entry_index]), "Each color should be made up of 'expected' values,"
+                                                       " not 'actual'")
+            for color_value in value[entry_index]:
+                compare_values_in_range(0, 255, color_value, "Color values may only be between 0 and 255. Got 'actual'")
+        self.__global_color_map = value
+
+
     def get_global_color_map(self):
         if not self.__has_global_color_map:
-            raise ValueNotPresentError("This file does not contain a global color map")
-        return self.__read_color_map(13)
+            raise ValueNotPresentError(NO_COLOR_MAP_MESSAGE)
+        if self.__global_color_map is None:
+            self.__global_color_map = self.__read_color_map(13)
+        return self.__global_color_map
 
     def get_background_color_index(self):
         return self.__background_color_index
