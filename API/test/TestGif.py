@@ -36,10 +36,15 @@ class TestGif(unittest.TestCase):
         gif = Gif.read_from_file(file_path)
         self.assertEqual(expected_width, gif.get_width())
 
-    @parameterized.expand([["data/tsTimer.gif", 8]])
+    @parameterized.expand([["data/tsTimer.gif", 1]])
     def test_color_resolution_correct(self, file_path, expected):
         gif = Gif.read_from_file(file_path)
         self.assertEqual(expected, gif.get_color_resolution())
+
+    @parameterized.expand([["data/tsTimer.gif", 8]])
+    def test_bits_per_pixel_correct(self, file_path, expected):
+        gif = Gif.read_from_file(file_path)
+        self.assertEqual(expected, gif.get_bits_per_pixel())
 
 if __name__ == '__main__':
     unittest.main()
