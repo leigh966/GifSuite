@@ -33,7 +33,7 @@ class Gif:
 
     def set_background_color_index(self, value):
         if value > pow(2, self.__bits_per_pixel) or value < 0:
-            raise ValueError("Color index must be be an unsigned 8 bit integer")
+            raise ValueError(f'Color index must be be an unsigned {self.__bits_per_pixel} bit integer')
         self.__background_color_index = value
 
     def get_bits_per_pixel(self):
