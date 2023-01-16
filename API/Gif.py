@@ -7,6 +7,15 @@ class Gif:
         self.__has_global_color_map = get_bit(gif_bytes[10], 7)
         self.__color_resolution = flip_bin(get_sub_binary(gif_bytes[10], 4, 7))+1
         self.__bits_per_pixel = flip_bin(get_sub_binary(gif_bytes[10], 0, 3))+1
+        self.__background_color_index = gif_bytes[11]
+
+    def get_background_color_index(self):
+        return self.__background_color_index
+
+    def set_background_color_index(self, value):
+        if value > 0b11111111 or value < 0:
+            raise ValueError("Color index must be be an unsigned 8 bit integer")
+        self.__background_color_index = value
 
     def get_bits_per_pixel(self):
         return self.__bits_per_pixel

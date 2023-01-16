@@ -46,6 +46,23 @@ class TestGif(unittest.TestCase):
         gif = Gif.read_from_file(file_path)
         self.assertEqual(expected, gif.get_bits_per_pixel())
 
+    @parameterized.expand([["data/tsTimer.gif", 0]])
+    def test_background_color_index_correct(self, file_path, expected):
+        gif = Gif.read_from_file(file_path)
+        self.assertEqual(expected, gif.get_background_color_index())
+
+    @parameterized.expand([[-1, False], [0, True], [0b11111111, True], [0b11111111+1, False]])
+    def test_set_background_color_index(self, value, allowed):
+        gif = Gif.read_from_file("data/tsTimer.gif")
+        start = gif.get_background_color_index()
+        try:
+            gif.set_background_color_index(value)
+            self.assertEqual(value, gif.get_background_color_index())
+        except ValueError:
+            self.assertFalse(allowed)
+            self.assertEqual(start, gif.get_background_color_index())
+
+
 if __name__ == '__main__':
     unittest.main()
 
