@@ -20,3 +20,6 @@ class TestMain(unittest.TestCase):
         for file in my_files:
             with self.subTest(filename=file):
                 convert_file(file)
+
+if __name__ == '__main__':
+    unittest.main()
